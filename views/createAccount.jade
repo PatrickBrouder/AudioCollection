@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h1 Create Account
+  form(name="loginForm", method="post", action='/admin/newAccount')
+        input(type="text", name="username")
+        input(type="text", name="email")
+        input(type="password", name="password")
+        input(type="submit")

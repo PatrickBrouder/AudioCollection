@@ -10,9 +10,17 @@ var users = require('./routes/users');
 
 var app = express();
 
+var session = require('express-session');
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
+var expressSessionOptions = {
+  secret:'mySecret',
+  resave: false,
+  saveUninitialized: false
+}
+app.use(session(expressSessionOptions));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

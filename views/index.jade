@@ -1,5 +1,11 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  h1 Audio Collection
+  p Please login or register
+  form(name="loginForm", method="post")
+        input(type="text", name="username")
+        input(type="password", name="password")
+        input(type="submit")
+  a(href="/admin/create")
+     button(type="button") create new account
