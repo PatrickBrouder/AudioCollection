@@ -42,7 +42,9 @@ router.post('/newAccount', function(req, res, next){
       dbConnection.end();
       res.redirect('/home');
   });
+});
 
-
+router.get('/home', function(req, res, next) {
+  res.render('home');
 });
 module.exports = router;
