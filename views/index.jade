@@ -3,7 +3,7 @@ extends layout
 block content
   h1 Audio Collection
   p Please login or register
-  form(name="loginForm", method="post")
+  form(name="loginForm", method="post", action='/login')
         input(type="text", name="username")
         input(type="password", name="password")
         input(type="submit")

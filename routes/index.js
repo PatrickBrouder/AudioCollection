@@ -47,4 +47,30 @@ router.post('/newAccount', function(req, res, next){
 router.get('/home', function(req, res, next) {
   res.render('home');
 });
+
+router.post('/login', function(req, res, next){
+  var dbConnection= mysql.createConnection(dbConnectionInfo);
+  dbConnection.connect();
+
+  dbConnection.on('error', function(err){
+    if(err.code == 'PROTOCOL_SEQUENCE_TIMEOUT'){
+      console.log('Got a PROTOCOL_SEQUENCE_TIMEOUT')
+    } else {
+      console.log('Got a db error ', err);
+    }
+  });
+
+  var userInfo={}
+  userInfo.username= req.body.username;
+  userInfo.password= req.body.password;
+  dbConnection.query('SELECT password, id FROM user WHERE username=?',[userInfo.username], function(err,results,fields){
+
+      if(err){
+          throw err;
+      }
+     // listItem.id = results.insertId;
+      dbConnection.end();
+      res.redirect('/home');
+  });
+});
 module.exports = router;
