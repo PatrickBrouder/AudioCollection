@@ -13,5 +13,7 @@ var dbConnectionInfo = {
 router.get('/', function(req, res, next) {
   res.render('index');
 });
-
+router.get('/create', function(req, res, next) {
+  res.render('createAccount');
+});
 module.exports = router;

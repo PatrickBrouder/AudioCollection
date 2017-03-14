@@ -10,9 +10,7 @@ var dbConnectionInfo = {
 };
 
 /* GET home page. */
-router.get('/create', function(req, res, next) {
-  res.render('createAccount');
-});
+
 
 router.post('/newAccount', function(req, res, next){
   var dbConnection= mysql.createConnection(dbConnectionInfo);
