@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 Audio Collection
+  p Something went wrong
+  p=errorMsg
+  form(name="loginForm", method="post", action='/login')
+        input(type="text", name="username")
+        input(type="password", name="password")
+        input(type="submit")
+  a(href='/create')
+     button(type="button") create new account

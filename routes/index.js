@@ -48,6 +48,10 @@ router.get('/home', function(req, res, next) {
   res.render('home');
 });
 
+router.get('/loginError', function(req, res, next) {
+  res.render('loginError',{ errorMsg: req.session.errorMessage });
+});
+
 router.post('/login', function(req, res, next){
   var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
@@ -69,13 +73,13 @@ router.post('/login', function(req, res, next){
       }
       if(results[0]==null){
         req.session.errorMessage ="Wrong username";
-        res.redirect('/',{ errorMsg: req.session.errorMessage });
+        res.redirect('/loginError');
       }else if(req.session.password == results[0].password){
         req.session.id=results[0].id;
         res.redirect('/home');
       }else{
         req.session.errorMessage ="Wrong password";
-        res.redirect('/',{ errorMsg: req.session.errorMessage });
+        res.redirect('/loginError');
       }
       
       dbConnection.end();
