@@ -8,7 +8,7 @@ var dbConnectionInfo = {
   password : 'dde1f314',
   database : 'acsm_c027cee5201f6e7'
 };
-
+req.session.errorMessage ="";
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index');
@@ -63,15 +63,19 @@ router.post('/login', function(req, res, next){
   req.session.username= req.body.username;
   req.session.password= req.body.password;
   dbConnection.query('SELECT password, id FROM user WHERE username=?',[req.session.username], function(err,results,fields){
-
+      
       if(err){
           throw err;
       }
-      if(req.session.password == results[0].password){
+      if(results[0]==null){
+        req.session.errorMessage ="Wrong username";
+        res.redirect('/',{ errorMsg: req.session.errorMessage });
+      }else if(req.session.password == results[0].password){
         req.session.id=results[0].id;
         res.redirect('/home');
       }else{
-        res.redirect('/');
+        req.session.errorMessage ="Wrong password";
+        res.redirect('/',{ errorMsg: req.session.errorMessage });
       }
       
       dbConnection.end();
