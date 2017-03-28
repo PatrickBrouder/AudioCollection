@@ -68,11 +68,14 @@ router.post('/login', function(req, res, next){
           throw err;
       }
       if(req.session.password == results[0].password){
+        req.session.id=results[0].id;
         res.redirect('/home');
+      }else{
+        res.redirect('/');
       }
-      req.session.id=results[0].id;
+      
       dbConnection.end();
-      res.redirect('/');
+      
   });
 });
 module.exports = router;
