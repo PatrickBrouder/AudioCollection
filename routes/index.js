@@ -8,10 +8,10 @@ var dbConnectionInfo = {
   password : 'dde1f314',
   database : 'acsm_c027cee5201f6e7'
 };
-//req.session.errorMessage ="";
+req.session.errorMessage ="";
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index');
+  res.render('index',{ errorMsg: req.session.errorMessage });
 });
 router.get('/create', function(req, res, next) {
   res.render('createAccount');
