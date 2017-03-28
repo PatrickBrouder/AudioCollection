@@ -59,18 +59,20 @@ router.post('/login', function(req, res, next){
       console.log('Got a db error ', err);
     }
   });
-
-  var userInfo={}
-  userInfo.username= req.body.username;
-  userInfo.password= req.body.password;
-  dbConnection.query('SELECT password, id FROM user WHERE username=?',[userInfo.username], function(err,results,fields){
+  
+  req.session.username= req.body.username;
+  req.session.password= req.body.password;
+  dbConnection.query('SELECT password, id FROM user WHERE username=?',[req.session.username], function(err,results,fields){
 
       if(err){
           throw err;
       }
-     // listItem.id = results.insertId;
+      if(req.session.password == results[0].password){
+        res.redirect('/home');
+      }
+      req.session.id=results[0].id;
       dbConnection.end();
-      res.redirect('/home');
+      res.redirect('/');
   });
 });
 module.exports = router;
