@@ -3,7 +3,10 @@ extends layout
 block content
   h1 Create Account
   form(name="loginForm", method="post", action='/newAccount')
+        label username
         input(type="text", name="username")
+        label email
         input(type="text", name="email")
+        label password
         input(type="password", name="password")
         input(type="submit")

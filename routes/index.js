@@ -9,7 +9,7 @@ var dbConnectionInfo = {
   database : 'acsm_c027cee5201f6e7'
 };
 
-/* GET home page. */
+
 router.get('/', function(req, res, next) {
   res.render('index');
 });
@@ -40,12 +40,20 @@ router.post('/newAccount', function(req, res, next){
       }
      // listItem.id = results.insertId;
       dbConnection.end();
-      res.redirect('/home');
+      req.session.loggedIn = true;
+      res.redirect('/userPlaylists');
   });
 });
 
-router.get('/home', function(req, res, next) {
-  res.render('home');
+router.get('/userPlaylists', function(req, res, next) {
+  if(req.session.loggedIn == false){
+    res.redirect('/');
+  }
+  res.render('userPlaylists');
+});
+
+router.get('/createPlaylist', function(req, res, next) {
+  res.render('createAccount');
 });
 
 router.get('/loginError', function(req, res, next) {
@@ -73,12 +81,15 @@ router.post('/login', function(req, res, next){
       }
       if(results[0]==null){
         req.session.errorMessage ="Wrong username";
+        req.session.loggedIn = false;
         res.redirect('/loginError');
       }else if(req.session.password == results[0].password){
         req.session.id=results[0].id;
-        res.redirect('/home');
+        req.session.loggedIn = true;
+        res.redirect('/userPlaylists');
       }else{
         req.session.errorMessage ="Wrong password";
+        req.session.loggedIn = false;
         res.redirect('/loginError');
       }
       
