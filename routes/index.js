@@ -52,8 +52,38 @@ router.get('/userPlaylists', function(req, res, next) {
   res.render('userPlaylists');
 });
 
-router.get('/createPlaylist', function(req, res, next) {
-  res.render('createAccount');
+router.get('/createNewPlaylist', function(req, res, next) {
+  res.render('createPlaylist');
+});
+
+router.post('/newAccount', function(req, res, next){
+  var playlistName = req.body.playlistName;
+  playlistName.trim();
+  if(username.length ==0)
+  {
+    res.redirect('/createNewPlaylist');
+  }
+  var dbConnection= mysql.createConnection(dbConnectionInfo);
+  dbConnection.connect();
+
+  dbConnection.on('error', function(err){
+    if(err.code == 'PROTOCOL_SEQUENCE_TIMEOUT'){
+      console.log('Got a PROTOCOL_SEQUENCE_TIMEOUT')
+    } else {
+      console.log('Got a db error ', err);
+    }
+  });
+
+  dbConnection.query('INSERT INTO dde1f314(name, userId) VALUES(?)',[playlistName, req.session.id], function(err,results,fields){
+
+      if(err){
+          throw err;
+      }
+     // listItem.id = results.insertId;
+      dbConnection.end();
+      req.session.loggedIn = true;
+      res.redirect('/userPlaylists');
+  });
 });
 
 router.get('/loginError', function(req, res, next) {

@@ -1,0 +1,8 @@
+extends layout
+
+block content
+  h1 Create Account
+  form(name="playlistForm", method="post", action='/newPlaylist')
+        label Playlist Name
+        input(type="text", name="playlistName")
+        input(type="submit")
