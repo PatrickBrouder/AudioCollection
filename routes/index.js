@@ -59,7 +59,7 @@ router.get('/createNewPlaylist', function(req, res, next) {
 router.post('/newPlaylist', function(req, res, next){
   var playlistName = req.body.playlistName;
   playlistName.trim();
-  if(username.length ==0)
+  if(playlistName.length ==0)
   {
     res.redirect('/createNewPlaylist');
   }
@@ -81,7 +81,6 @@ router.post('/newPlaylist', function(req, res, next){
       }
      // listItem.id = results.insertId;
       dbConnection.end();
-      req.session.loggedIn = true;
       res.redirect('/userPlaylists');
   });
 });
