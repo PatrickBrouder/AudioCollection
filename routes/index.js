@@ -73,8 +73,11 @@ router.post('/newPlaylist', function(req, res, next){
       console.log('Got a db error ', err);
     }
   });
-  var userid= req.session.id;
-  dbConnection.query('INSERT INTO playlists_table(name, userId) VALUES(?)',[playlistName, userid ], function(err,results,fields){
+  var playlistInfo={}
+  playlistInfo.playlistName= req.body.playlistName;
+  playlistInfo.useId= req.session.userId;
+  
+  dbConnection.query('INSERT INTO playlists_table(name, userId) VALUES(?)',[playlistInfo.playlistName, playlistInfo.useId ], function(err,results,fields){
 
       if(err){
           throw err;
@@ -113,7 +116,7 @@ router.post('/login', function(req, res, next){
         req.session.loggedIn = false;
         res.redirect('/loginError');
       }else if(req.session.password == results[0].password){
-        req.session.id=results[0].id;
+        req.session.userId=results[0].id;
         req.session.loggedIn = true;
         res.redirect('/userPlaylists');
       }else{
