@@ -74,7 +74,7 @@ router.post('/newPlaylist', function(req, res, next){
     }
   });
 
-  dbConnection.query('INSERT INTO dde1f314(name, userId) VALUES(?)',[playlistName, req.session.id], function(err,results,fields){
+  dbConnection.query('INSERT INTO playlists_table(name, userId) VALUES(?)',[playlistName, req.session.id], function(err,results,fields){
 
       if(err){
           throw err;
