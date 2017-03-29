@@ -77,7 +77,7 @@ router.post('/newPlaylist', function(req, res, next){
   playlistInfo.playlistName= req.body.playlistName;
   playlistInfo.useId= req.session.userId;
   
-  dbConnection.query('INSERT INTO playlists_table(name, userId) VALUES(?)',[playlistInfo.playlistName, playlistInfo.useId ], function(err,results,fields){
+  dbConnection.query('INSERT INTO playlists_table(name, userId) VALUES(?, ?)',[playlistInfo.playlistName, playlistInfo.useId ], function(err,results,fields){
 
       if(err){
           throw err;
