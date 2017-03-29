@@ -17,7 +17,7 @@ router.get('/create', function(req, res, next) {
   res.render('createAccount');
 });
 
-router.post('/newPlaylist', function(req, res, next){
+router.post('/newAccount', function(req, res, next){
   var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
 
@@ -56,7 +56,7 @@ router.get('/createNewPlaylist', function(req, res, next) {
   res.render('createPlaylist');
 });
 
-router.post('/newAccount', function(req, res, next){
+router.post('/newPlaylist', function(req, res, next){
   var playlistName = req.body.playlistName;
   playlistName.trim();
   if(username.length ==0)
