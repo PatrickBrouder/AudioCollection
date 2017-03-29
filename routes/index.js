@@ -73,8 +73,8 @@ router.post('/newPlaylist', function(req, res, next){
       console.log('Got a db error ', err);
     }
   });
-
-  dbConnection.query('INSERT INTO playlists_table(name, userId) VALUES(?)',[playlistName, req.session.id], function(err,results,fields){
+  var userid= req.session.id;
+  dbConnection.query('INSERT INTO playlists_table(name, userId) VALUES(?)',[playlistName, userid ], function(err,results,fields){
 
       if(err){
           throw err;
