@@ -225,22 +225,9 @@ router.post('/newTrack', function(req, res, next){
       if(err){
           throw err;
       }
-     //res.redirect('/playlist');
-  });
-  var audioId;
-  dbConnection.query('SELECT id FROM audio_links WHERE name=?',[trackName], function(err,results,fields){
-     if(err){
-          throw err;
-      }
-     audioId=results[0].id;
-  });
-  dbConnection.query('INSERT INTO audio_playlist(idaudio) VALUES(?)',[audioId], function(err,results,fields){
-
-      if(err){
-          throw err;
-      }
-      dbConnection.end();
+     dbConnection.end();
      res.redirect('/playlist');
   });
+  
 });
 module.exports = router;
