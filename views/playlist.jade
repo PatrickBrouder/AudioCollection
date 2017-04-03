@@ -1,8 +1,9 @@
 extends layout
 
 block content
-  h1 Welcome to you playlists
-  for playList in playlists
-    p= playList.name
+  h1 Welcome to you 
+  for track in songsInPlaylist
+    p= track.name
+    p= track.url
   a(href='/createNewPlaylist')
      button(type="button") Create new playlist

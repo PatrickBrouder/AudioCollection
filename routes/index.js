@@ -204,7 +204,8 @@ router.get('/listen/:id', function(req, res, next) {
           audioDetails.push(audiInfo);
         }
       }
-       
+       dbConnection.end();
+      res.redirect('/playlist',, { songsInPlaylist: audioDetails });
     });
     }
   }
