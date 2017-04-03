@@ -218,9 +218,11 @@ router.post('/newTrack', function(req, res, next){
       console.log('Got a db error ', err);
     }
   });
+  var trackInfo={}
+  trackInfo.trackN= req.body.trackName;
+  trackInfo.trackLink= req.body.trackLink;
   
-  
-  dbConnection.query('INSERT INTO audio_links(name, url) VALUES(?, ?)',[trackName, trackUrl ], function(err,results,fields){
+  dbConnection.query('INSERT INTO audio_links(name, url) VALUES(?, ?)',[trackInfo.trackN, trackInfo.trackLink], function(err,results,fields){
 
       if(err){
           throw err;
