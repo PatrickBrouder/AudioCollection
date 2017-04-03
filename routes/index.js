@@ -226,7 +226,7 @@ router.post('/newTrack', function(req, res, next){
   var trackInfo={}
   trackInfo.trackN= req.body.trackName;
   trackInfo.trackLink= req.body.trackLink;
-  dbConnection.query('INSERT INTO audio_links(name, url) VALUES(?,?, ?)',[trackInfo.trackN, trackInfo.trackLink], function(err,results,fields){
+  dbConnection.query('INSERT INTO audio_links(name, url) VALUES(?,?)',[trackInfo.trackN, trackInfo.trackLink], function(err,results,fields){
 
       if(err){
           throw err;
