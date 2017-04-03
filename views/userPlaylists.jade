@@ -3,9 +3,8 @@ extends layout
 block content
   h1 Welcome to you playlists
   for playList in playlists
-    div
-      p= playList.name
-      p= playList.playId
+      a(href='/listen/#{playlist.playId}') #{playlist.name}
+      
     //a(href='/listen/#{playlist.playId}') Listen
   a(href='/createNewPlaylist')
      button(type="button") Create new playlist
