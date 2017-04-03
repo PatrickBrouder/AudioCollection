@@ -59,13 +59,13 @@ router.get('/userPlaylists', function(req, res, next) {
       console.log('Got a db error ', err);
     }
   });
-
+  var allPlaylists = new Array();
   dbConnection.query('SELECT name FROM playlists_table WHERE username=?',[req.session.userId], function(err,results,fields){
 
       if(err){
           throw err;
       }
-      var allPlaylists = new Array();
+      
       if(results[0]!=null){
         for (var i=0; i<results.length; i++) {
           var playlist = {};
