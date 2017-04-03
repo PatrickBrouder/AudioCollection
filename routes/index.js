@@ -218,11 +218,9 @@ router.post('/newTrack', function(req, res, next){
       console.log('Got a db error ', err);
     }
   });
-  var trackInfo={}
-  trackInfo.trackName= trackName;
-  trackInfo.trackUrl= trackUrl;
   
-  dbConnection.query('INSERT INTO audio_links(name, url) VALUES(?, ?)',[trackInfo.trackName, trackInfo.trackUrl ], function(err,results,fields){
+  
+  dbConnection.query('INSERT INTO audio_links(name, url) VALUES(?, ?)',[trackName, trackUrl ], function(err,results,fields){
 
       if(err){
           throw err;
@@ -230,7 +228,7 @@ router.post('/newTrack', function(req, res, next){
      
   });
   var audioId;
-  dbConnection.query('SELECT id FROM audio_links WHERE name=?',[trackInfo.trackName], function(err,results,fields){
+  dbConnection.query('SELECT id FROM audio_links WHERE name=?',[trackName], function(err,results,fields){
      if(err){
           throw err;
       }
