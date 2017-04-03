@@ -4,7 +4,7 @@ block content
   h1 Welcome to you playlists
   for playList in playlists
     p= playList.name
-    p= playList.playId
+    p a(href='/listen/#{playlist.playId}') Listen
     //a(href='/listen/#{playlist.playId}') Listen
   a(href='/createNewPlaylist')
      button(type="button") Create new playlist
