@@ -186,7 +186,7 @@ router.get('/listen/:id', function(req, res, next) {
         }
       }
        dbConnection.end();
-       res.render('/playlist', { songsInPlaylist: trackInPlaylist });
+       res.render('playlist', { songsInPlaylist: trackInPlaylist });
     });
   }
 
