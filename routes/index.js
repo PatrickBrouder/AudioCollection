@@ -69,7 +69,7 @@ router.get('/userPlaylists', function(req, res, next) {
       if(results[0]!=null){
         for (var i=0; i<results.length; i++) {
           var playlist = {};
-          playlist.id = results[i].name;
+          playlist.name = results[i].name;
           allPlaylists.push(playlist);
         }
       }
