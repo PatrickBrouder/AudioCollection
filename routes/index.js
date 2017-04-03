@@ -49,7 +49,35 @@ router.get('/userPlaylists', function(req, res, next) {
   if(req.session.loggedIn == false){
     res.redirect('/');
   }
-  res.render('userPlaylists');
+  var dbConnection= mysql.createConnection(dbConnectionInfo);
+  dbConnection.connect();
+
+  dbConnection.on('error', function(err){
+    if(err.code == 'PROTOCOL_SEQUENCE_TIMEOUT'){
+      console.log('Got a PROTOCOL_SEQUENCE_TIMEOUT')
+    } else {
+      console.log('Got a db error ', err);
+    }
+  });
+
+  dbConnection.query('SELECT name FROM playlists_table WHERE username=?',[req.session.userId], function(err,results,fields){
+
+      if(err){
+          throw err;
+      }
+      var allPlaylists = new Array();
+      if(results[0]!=null){
+        for (var i=0; i<results.length; i++) {
+          var playlist = {};
+          playlist.id = results[i].name;
+          allPlaylists.push(playlist);
+        }
+      }
+     // listItem.id = results.insertId;
+      dbConnection.end();
+      
+  });
+  res.render('userPlaylists', { playlists: allPlaylists });
 });
 
 router.get('/createNewPlaylist', function(req, res, next) {
