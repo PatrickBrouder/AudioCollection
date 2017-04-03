@@ -159,5 +159,37 @@ router.post('/login', function(req, res, next){
   });
 });
 
+router.get('/listen/:id', function(req, res, next) {
+  
+  if (req.params.id) {
+    var dbConnection= mysql.createConnection(dbConnectionInfo);
+  dbConnection.connect();
+
+  dbConnection.on('error', function(err){
+    if(err.code == 'PROTOCOL_SEQUENCE_TIMEOUT'){
+      console.log('Got a PROTOCOL_SEQUENCE_TIMEOUT')
+    } else {
+      console.log('Got a db error ', err);
+    }
+  });
+    
+    dbConnection.query('SELECT name FROM audio_links WHERE id IN(SELECT idaudio FROM audio_playlist WHERE playlistid=?) ',[req.params.id], function(err,results, fields) {
+      if (err) {
+        throw err;
+      }
+       var trackInPlaylist= new Array();
+      if(results[0]!=null){
+        for (var i=0; i<results.length; i++) {
+          var trackInfo = {};
+          trackInfo.name = results[i].name;
+          trackInPlaylist.push(trackInfo);
+        }
+      }
+       dbConnection.end();
+       res.render('/playlist', { songsInPlaylist: trackInPlaylist });
+    });
+  }
+
+});
 
 module.exports = router;
