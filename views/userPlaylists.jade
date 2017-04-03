@@ -6,7 +6,7 @@ block content
       - var foo =playList.playId
       p= playList.name 
       p= foo
-    //a(href='/listen/#{playlist.playId}') Listen
+      a(href='/listen/#{foo}') Listen
   a(href='/createNewPlaylist')
      button(type="button") Create new playlist
   
