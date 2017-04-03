@@ -33,6 +33,7 @@ router.post('/newAccount', function(req, res, next){
   userInfo.username= req.body.username;
   userInfo.email= req.body.email;
   userInfo.password= req.body.password;
+  req.session.username=req.body.username;
   dbConnection.query('INSERT INTO user(username, email, password) VALUES(?,?, ?)',[userInfo.username, userInfo.email, userInfo.password], function(err,results,fields){
 
       if(err){
@@ -59,7 +60,18 @@ router.get('/userPlaylists', function(req, res, next) {
       console.log('Got a db error ', err);
     }
   });
- 
+  dbConnection.query('SELECT id FROM user WHERE username=?',[req.session.username], function(err,results,fields){
+      
+      if(err){
+          throw err;
+      }
+      
+        req.session.userId=results[0].id;
+        
+      
+      
+  });
+  
   dbConnection.query('SELECT name, playlistId FROM playlists_table WHERE userId=?',[req.session.userId], function(err,results,fields){
 
       if(err){
