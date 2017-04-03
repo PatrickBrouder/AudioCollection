@@ -5,7 +5,7 @@ block content
   for playList in playlists
     div
       p= playList.name
-      a(href='/listen/#{playlist.playId}') Listen
+      p= playList.playId
     //a(href='/listen/#{playlist.playId}') Listen
   a(href='/createNewPlaylist')
      button(type="button") Create new playlist
