@@ -60,7 +60,7 @@ router.get('/userPlaylists', function(req, res, next) {
     }
   });
  
-  dbConnection.query('SELECT name FROM playlists_table WHERE userId=?',[req.session.userId], function(err,results,fields){
+  dbConnection.query('SELECT name, playlistId FROM playlists_table WHERE userId=?',[req.session.userId], function(err,results,fields){
 
       if(err){
           throw err;
@@ -70,6 +70,7 @@ router.get('/userPlaylists', function(req, res, next) {
         for (var i=0; i<results.length; i++) {
           var playlist = {};
           playlist.name = results[i].name;
+          playlist.playId = results[i].playlistId;
           allPlaylists.push(playlist);
         }
       }
@@ -110,7 +111,7 @@ router.post('/newPlaylist', function(req, res, next){
       if(err){
           throw err;
       }
-     // listItem.id = results.insertId;
+     
       dbConnection.end();
       res.redirect('/userPlaylists');
   });
@@ -156,5 +157,57 @@ router.post('/login', function(req, res, next){
       dbConnection.end();
       
   });
+});
+
+router.get('/listen/:id', function(req, res, next) {
+  
+  if (req.params.id) {
+    var dbConnection= mysql.createConnection(dbConnectionInfo);
+  dbConnection.connect();
+
+  dbConnection.on('error', function(err){
+    if(err.code == 'PROTOCOL_SEQUENCE_TIMEOUT'){
+      console.log('Got a PROTOCOL_SEQUENCE_TIMEOUT')
+    } else {
+      console.log('Got a db error ', err);
+    }
+  });
+  var audioInPlaylist = new Array();
+  var audioAlready = false;
+  dbConnection.query('SELECT idaudio FROM audio_playlist WHERE playlistid=?',[req.params.id], function(err,results, fields) {
+      if (err) {
+        throw err;
+      }
+      
+      if(results[0]!=null){
+        audioAlready = true;
+        for (var i=0; i<results.length; i++) {
+          var audioId = results[i].idaudio;
+          
+          audioInPlaylist.push(audioId);
+        }
+      }
+       
+    });
+    var audioDetails = new Array();
+    if(audioAlready){
+    dbConnection.query('SELECT name, url FROM audio_links WHERE id IN=?',[audioInPlaylist], function(err,results, fields) {
+      if (err) {
+        throw err;
+      }
+      
+      if(results[0]!=null){
+        for (var i=0; i<results.length; i++) {
+          var audiInfo = {};
+          audiInfo.name=results[i].name;
+          audiInfo.url=results[i].url;
+          audioDetails.push(audiInfo);
+        }
+      }
+       
+    });
+    }
+  }
+
 });
 module.exports = router;
