@@ -208,6 +208,26 @@ router.post('/newTrack', function(req, res, next){
   {
     res.redirect('/addNewTrack');
   }
+  
+  var trackInfo={}
+  trackInfo.trackN= req.body.trackName;
+  trackInfo.trackLink= req.body.trackLink;
+  res.redirect('/playlist');
+  
+  
+});
+module.exports = router;
+
+/*
+router.post('/newTrack', function(req, res, next){
+  var trackName = req.body.trackName;
+  trackName.trim();
+  var trackUrl = req.body.trackLink;
+  trackUrl.trim();
+  if(trackName.length ==0 ||trackUrl.length ==0)
+  {
+    res.redirect('/addNewTrack');
+  }
   var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
 
@@ -222,7 +242,14 @@ router.post('/newTrack', function(req, res, next){
   trackInfo.trackN= req.body.trackName;
   trackInfo.trackLink= req.body.trackLink;
   res.redirect('/playlist');
-  
+  dbConnection.query('INSERT INTO audio_links(name, url) VALUES(?, ?)',[trackInfo.trackN, trackInfo.trackLink], function(err,results,fields){
+
+      if(err){
+          throw err;
+      }
+     dbConnection.end();
+     
+  });
   
 });
-module.exports = router;
+*/
