@@ -60,7 +60,7 @@ router.get('/userPlaylists', function(req, res, next) {
     }
   });
  
-  dbConnection.query('SELECT name FROM playlists_table WHERE username=?',[req.session.userId], function(err,results,fields){
+  dbConnection.query('SELECT name FROM playlists_table WHERE userId=?',[req.session.userId], function(err,results,fields){
 
       if(err){
           throw err;
