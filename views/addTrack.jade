@@ -1,0 +1,10 @@
+extends layout
+
+block content
+  h1 Add new track
+  form(name="newtrackform", method="post", action='/newTrack')
+        label Track name
+        input(type="text", name="trackName")
+        label Url link
+        input(type="text", name="trackLink")
+        input(type="submit")

@@ -162,7 +162,13 @@ router.post('/login', function(req, res, next){
 router.get('/listen/:id', function(req, res, next) {
   
   if (req.params.id) {
-    var dbConnection= mysql.createConnection(dbConnectionInfo);
+    req.session.currentPlaylist=req.params.id;
+    res.redirect('/playlist');
+  }
+
+});
+router.get('/playlist', function(req, res, next) {
+  var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
 
   dbConnection.on('error', function(err){
@@ -173,7 +179,7 @@ router.get('/listen/:id', function(req, res, next) {
     }
   });
     
-    dbConnection.query('SELECT name FROM audio_links WHERE id IN(SELECT idaudio FROM audio_playlist WHERE playlistid=?) ',[req.params.id], function(err,results, fields) {
+    dbConnection.query('SELECT name FROM audio_links WHERE id IN(SELECT idaudio FROM audio_playlist WHERE playlistid=?) ',[req.session.currentPlaylist], function(err,results, fields) {
       if (err) {
         throw err;
       }
@@ -188,8 +194,54 @@ router.get('/listen/:id', function(req, res, next) {
        dbConnection.end();
        res.render('playlist', { songsInPlaylist: trackInPlaylist });
     });
-  }
-
+});
+router.get('/addNewTrack', function(req, res, next) {
+  res.render('addTrack');
 });
 
+router.post('/newTrack', function(req, res, next){
+  var trackName = req.body.trackName;
+  trackName.trim();
+  var trackUrl = req.body.trackLink;
+  trackUrl.trim();
+  if(trackName.length ==0 ||trackUrl.length ==0)
+  {
+    res.redirect('/addNewTrack');
+  }
+  var dbConnection= mysql.createConnection(dbConnectionInfo);
+  dbConnection.connect();
+
+  dbConnection.on('error', function(err){
+    if(err.code == 'PROTOCOL_SEQUENCE_TIMEOUT'){
+      console.log('Got a PROTOCOL_SEQUENCE_TIMEOUT')
+    } else {
+      console.log('Got a db error ', err);
+    }
+  });
+  var trackInfo={}
+  trackInfo.trackName= trackName;
+  trackInfo.trackUrl= trackUrl;
+  
+  dbConnection.query('INSERT INTO audio_links(name, url) VALUES(?, ?)',[trackInfo.trackName, trackInfo.trackUrl ], function(err,results,fields){
+
+      if(err){
+          throw err;
+      }
+     
+  });
+  var audioId;
+  dbConnection.query('SELECT id FROM audio_links WHERE name=?',[trackInfo.trackName], function(err,results,fields){
+     if(err){
+          throw err;
+      }
+     audioId=results[0].id;
+  });
+  dbConnection.query('INSERT INTO audio_playlist(idaudio) VALUES(?)',[audioId], function(err,results,fields){
+
+      if(err){
+          throw err;
+      }
+     res.redirect('/playlist');
+  });
+});
 module.exports = router;
