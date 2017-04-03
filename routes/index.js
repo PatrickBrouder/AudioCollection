@@ -74,7 +74,7 @@ router.get('/userPlaylists', function(req, res, next) {
           allPlaylists.push(playlist);
         }
       }
-     // listItem.id = results.insertId;
+     
       dbConnection.end();
       res.render('userPlaylists', { playlists: allPlaylists });
   });
