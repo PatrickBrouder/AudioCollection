@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 Welcome to you playlists
+  for song in playingNow
+    div
+      p= song.name 
+      p= song.url
+  a(href='/playlist')
+     button(type="button") Back
+
+  

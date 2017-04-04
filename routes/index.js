@@ -18,6 +18,19 @@ router.get('/create', function(req, res, next) {
 });
 
 router.post('/newAccount', function(req, res, next){
+  var userInfo={}
+  userInfo.username= req.body.username;
+  userInfo.email= req.body.email;
+  userInfo.password= req.body.password;
+  req.session.username=req.body.username;
+
+  userInfo.username.trim();
+  userInfo.email.trim();
+  userInfo.password.trim();
+  if(userInfo.username.length ==0 || userInfo.email.length ==0 ||userInfo.password.length ==0)
+  {
+    return res.redirect('/create');
+  }
   var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
 
@@ -29,11 +42,7 @@ router.post('/newAccount', function(req, res, next){
     }
   });
 
-  var userInfo={}
-  userInfo.username= req.body.username;
-  userInfo.email= req.body.email;
-  userInfo.password= req.body.password;
-  req.session.username=req.body.username;
+  
   dbConnection.query('INSERT INTO user(username, email, password) VALUES(?,?, ?)',[userInfo.username, userInfo.email, userInfo.password], function(err,results,fields){
 
       if(err){
@@ -102,7 +111,7 @@ router.post('/newPlaylist', function(req, res, next){
   playlistName.trim();
   if(playlistName.length ==0)
   {
-    res.redirect('/createNewPlaylist');
+    return res.redirect('/createNewPlaylist');
   }
   var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
@@ -191,7 +200,7 @@ router.get('/playlist', function(req, res, next) {
     }
   });
     
-    dbConnection.query('SELECT name FROM audio_links WHERE id IN(SELECT idaudio FROM audio_playlist WHERE playlistid=?) ',[req.session.currentPlaylist], function(err,results, fields) {
+    dbConnection.query('SELECT name, id FROM audio_links WHERE id IN(SELECT idaudio FROM audio_playlist WHERE playlistid=?) ',[req.session.currentPlaylist], function(err,results, fields) {
       if (err) {
         throw err;
       }
@@ -200,6 +209,7 @@ router.get('/playlist', function(req, res, next) {
         for (var i=0; i<results.length; i++) {
           var trackInfo = {};
           trackInfo.name = results[i].name;
+          trackInfo.id = results[i].id;
           trackInPlaylist.push(trackInfo);
         }
       }
@@ -218,7 +228,7 @@ router.post('/newTrack', function(req, res, next){
   trackUrl.trim();
   if(trackName.length ==0 ||trackUrl.length ==0)
   {
-    res.redirect('/addNewTrack');
+    return res.redirect('/addNewTrack');
   }
 
   var dbConnection= mysql.createConnection(dbConnectionInfo);
@@ -248,17 +258,48 @@ router.post('/newTrack', function(req, res, next){
       if(err){
           throw err;
       }
-      
-       
         dbConnection.end();
-      
       res.redirect('/playlist');
-      
   });
+});
+
+router.get('/playSong/:id', function(req, res, next) {
   
-  
-  
-  
+  if (req.params.id) {
+    req.session.currentSong=req.params.id;
+    res.redirect('/track');
+  }
+
+});
+
+router.get('/track', function(req, res, next) {
+  var dbConnection= mysql.createConnection(dbConnectionInfo);
+  dbConnection.connect();
+
+  dbConnection.on('error', function(err){
+    if(err.code == 'PROTOCOL_SEQUENCE_TIMEOUT'){
+      console.log('Got a PROTOCOL_SEQUENCE_TIMEOUT')
+    } else {
+      console.log('Got a db error ', err);
+    }
+  });
+    
+    dbConnection.query('SELECT name, url FROM audio_links WHERE id=?',[req.session.currentSong], function(err,results, fields) {
+      if (err) {
+        throw err;
+      }
+       var songPlaying= new Array();
+      if(results[0]!=null){
+        for (var i=0; i<results.length; i++) {
+          var trackPlay= {};
+          trackPlay.name = results[i].name;
+          trackPlay.url = results[i].url;
+          songPlaying.push(trackPlay);
+        }
+      }
+       dbConnection.end();
+       res.render('track', { playingNow: songPlaying });
+    });
 });
 
 module.exports = router;
