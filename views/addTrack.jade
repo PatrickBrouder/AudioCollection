@@ -2,6 +2,7 @@ extends layout
 
 block content
   h1 Add new track
+  p=errorMsgTrack
   form(name="newtrackform", method="post", action='/newTrack')
         label Track name
         input(type="text", name="trackName")

@@ -1,11 +1,12 @@
 extends layout
 
 block content
-  h1 Welcome to you 
+  h1 Welcome to you #{playName}
   for track in songsInPlaylist
     - var trackId =track.id
     p= track.name
     a(href='/playSong/#{trackId}') Listen
+    a(href='/deleteSong/#{trackId}') delete
   a(href='/addNewTrack')
      button(type="button") Add new track
   a(href='/userPlaylists')

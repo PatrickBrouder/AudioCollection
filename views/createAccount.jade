@@ -2,6 +2,7 @@ extends layout
 
 block content
   h1 Create Account
+  p=accountError
   form(name="loginForm", method="post", action='/newAccount')
         label username
         input(type="text", name="username")

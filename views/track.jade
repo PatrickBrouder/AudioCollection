@@ -5,7 +5,8 @@ block content
   for song in playingNow
     div
       p= song.name 
-      p= song.url
+      
+      <iframe src="#{song.urlLink}" frameborder="0"></iframe>
   a(href='/playlist')
      button(type="button") Back
 

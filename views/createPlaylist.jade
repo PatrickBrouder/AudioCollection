@@ -2,6 +2,7 @@ extends layout
 
 block content
   h1 Create Account
+  p=playlistError
   form(name="playlistForm", method="post", action='/newPlaylist')
         label Playlist Name
         input(type="text", name="playlistName")

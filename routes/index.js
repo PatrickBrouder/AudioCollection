@@ -29,7 +29,8 @@ router.post('/newAccount', function(req, res, next){
   userInfo.password.trim();
   if(userInfo.username.length ==0 || userInfo.email.length ==0 ||userInfo.password.length ==0)
   {
-    return res.redirect('/create');
+    var errorMsgAccount= "All fields must be filled in"
+    return res.render('createAccount',{ accountError: errorMsgAccount });
   }
   var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
@@ -111,7 +112,8 @@ router.post('/newPlaylist', function(req, res, next){
   playlistName.trim();
   if(playlistName.length ==0)
   {
-    return res.redirect('/createNewPlaylist');
+    var errorMessagePlaylist="Playlist must have a name";
+    return res.render('createPlaylist',{ playlistError: errorMessagePlaylist });
   }
   var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
@@ -199,22 +201,32 @@ router.get('/playlist', function(req, res, next) {
       console.log('Got a db error ', err);
     }
   });
-    
+    var trackInPlaylist= new Array();
+    var trackInfo = {};
+    var playlistName=" ";
+    dbConnection.query('SELECT name FROM playlists_table WHERE playlistId=?',[req.session.currentPlaylist], function(err,results,fields){
+      
+      if(err){
+          throw err;
+      }
+       playlistName= results[0].name;
+      
+  });
     dbConnection.query('SELECT name, id FROM audio_links WHERE id IN(SELECT idaudio FROM audio_playlist WHERE playlistid=?) ',[req.session.currentPlaylist], function(err,results, fields) {
       if (err) {
         throw err;
       }
-       var trackInPlaylist= new Array();
+     
       if(results[0]!=null){
         for (var i=0; i<results.length; i++) {
-          var trackInfo = {};
+
           trackInfo.name = results[i].name;
           trackInfo.id = results[i].id;
           trackInPlaylist.push(trackInfo);
         }
       }
        dbConnection.end();
-       res.render('playlist', { songsInPlaylist: trackInPlaylist });
+       res.render('playlist', { songsInPlaylist: trackInPlaylist, playName: playlistName  } );
     });
 });
 router.get('/addNewTrack', function(req, res, next) {
@@ -228,7 +240,14 @@ router.post('/newTrack', function(req, res, next){
   trackUrl.trim();
   if(trackName.length ==0 ||trackUrl.length ==0)
   {
-    return res.redirect('/addNewTrack');
+    var errorMessageTrack="both fields must contain something"
+    return res.render('addTrack', { errorMsgTrack: errorMessageTrack });
+  }
+  
+  var n = trackUrl.indexOf("soundcloud.com");
+  if(n== -1){
+    var errorMessageTrack2="track must be a soundcloud url"
+    return res.render('addTrack', { errorMsgTrack: req.session.errorMessageTrack2 });
   }
 
   var dbConnection= mysql.createConnection(dbConnectionInfo);
@@ -294,6 +313,7 @@ router.get('/track', function(req, res, next) {
           var trackPlay= {};
           trackPlay.name = results[i].name;
           trackPlay.url = results[i].url;
+          trackPlay.urlLink = "https://w.soundcloud.com/player?url="+trackPlay.url
           songPlaying.push(trackPlay);
         }
       }
@@ -302,4 +322,60 @@ router.get('/track', function(req, res, next) {
     });
 });
 
+router.get('/deleteSong/:id', function(req, res, next) {
+  
+  if (req.params.id) {
+    var dbConnection = mysql.createConnection(dbConnectionInfo);
+    dbConnection.connect();
+
+    
+    dbConnection.on('error', function(err) {
+      if (err.code == 'PROTOCOL_SEQUENCE_TIMEOUT') {
+        console.log('Got a DB PROTOCOL_SEQUENCE_TIMEOUT Error ... ignoring ');
+      } else {
+        console.log('Got a DB Error: ', err);
+      }
+    });
+
+    dbConnection.query('DELETE FROM audio_playlist WHERE idaudio=? && playlistId',[req.params.id, req.session.currentPlaylist], function(err,results, fields) {
+      if (err) {
+        throw err;
+      }
+       dbConnection.end();
+       res.redirect('/playlist');
+    });
+  }
+
+});
+
+router.get('/deletePlaylist/:id', function(req, res, next) {
+  
+  if (req.params.id) {
+    var dbConnection = mysql.createConnection(dbConnectionInfo);
+    dbConnection.connect();
+
+    
+    dbConnection.on('error', function(err) {
+      if (err.code == 'PROTOCOL_SEQUENCE_TIMEOUT') {
+        console.log('Got a DB PROTOCOL_SEQUENCE_TIMEOUT Error ... ignoring ');
+      } else {
+        console.log('Got a DB Error: ', err);
+      }
+    });
+    dbConnection.query('DELETE FROM audio_playlist WHERE playlistid=?',[req.params.id], function(err,results, fields) {
+      if (err) {
+        throw err;
+      }
+       
+    });
+    dbConnection.query('DELETE FROM playlists_table WHERE playlistId=?',[req.params.id], function(err,results, fields) {
+      if (err) {
+        throw err;
+      }
+       dbConnection.end();
+       res.redirect('/userPlaylists');
+    });
+  }
+
+});
 module.exports = router;
