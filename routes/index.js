@@ -7,7 +7,7 @@ var dbConnectionInfo = {
   host : 'localhost',
   user : 'root',
   password : '12345',
-  database : 'audio'
+  database : 'audio_1'
 }
 */
 var dbConnectionInfo = {
