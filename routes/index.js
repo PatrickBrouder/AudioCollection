@@ -6,7 +6,7 @@ var router = express.Router();
 var dbConnectionInfo = {
   host : 'localhost',
   user : 'root',
-  password : 'Liverbuda1',
+  password : '12345',
   database : 'audio'
 }
 */
