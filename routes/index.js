@@ -10,7 +10,7 @@ var dbConnectionInfo = {
   password : '12345',
   database : 'audio_1'
 }*/
-var transport = mailer.createTransport({
+var transport = mailer.createTransport(smtpTransport,{
     service: "gmail",
     auth: {
         type: 'OAuth2',
