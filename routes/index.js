@@ -1,25 +1,18 @@
 var express = require('express');
 var mysql = require('mysql');
+var nodemailer = require('nodemailer');
 var router = express.Router();
-var mailer = require("nodemailer");
-var smtpTransport = require('nodemailer-smtp-transport');
-/*
+
+
 var dbConnectionInfo = {
   host : 'localhost',
   user : 'root',
   password : '12345',
   database : 'audio_1'
-}*/
-var transport = mailer.createTransport(smtpTransport,{
-    service: "gmail",
-    auth: {
-        type: 'OAuth2',
-        clientId: '264988223597-ppadpjsfihfi4nohg9aitlhnv7t96lge.apps.googleusercontent.com',
-        clientSecret: 'vlblchhercskdtgnt'
-    }
-});
+}
 
 
+/*
 
 var dbConnectionInfo = {
   host : 'eu-cdbr-azure-west-d.cloudapp.net',
@@ -27,7 +20,7 @@ var dbConnectionInfo = {
   password : 'dde1f314',
   database : 'acsm_c027cee5201f6e7'
 };
-
+*/
 router.get('/', function(req, res, next) {
   req.session.loggedIn = false;
   res.render('index');
@@ -38,16 +31,15 @@ router.get('/create', function(req, res, next) {
 
 
 router.post('/newAccount', function(req, res, next){
-  var userInfo={}
-  userInfo.username= req.body.username;
-  userInfo.email= req.body.email;
-  userInfo.password= req.body.password;
-  req.session.username=req.body.username;
 
-  userInfo.username.trim();
-  userInfo.email.trim();
-  userInfo.password.trim();
-  if(userInfo.username.length ==0 || userInfo.email.length ==0 ||userInfo.password.length ==0)
+  req.session.username= req.body.username;
+  req.session.email= req.body.email;
+  req.session.password= req.body.password;
+
+  req.session.username.trim();
+  req.session.email.trim();
+  req.session.password.trim();
+  if(req.session.username.length ==0 || req.session.email.length ==0 ||req.session.password.length ==0)
   {
     var errorMsgAccount= "All fields must be filled in"
     return res.render('createAccount',{ accountError: errorMsgAccount });
@@ -62,15 +54,86 @@ router.post('/newAccount', function(req, res, next){
       console.log('Got a db error ', err);
     }
   });
-
+  var nameUsedBefore=false;
+  var emailUsedBefore=false;
+  dbConnection.query('SELECT username, email FROM user', function(err,results,fields){
+      
+      if(err){
+          throw err;
+      }
+      if(results[0]!=null){
+       for(i=0; i<results.length; i++){
+          if(results[i].username==req.body.username){
+            nameUsedBefore=true;
+            
+          }
+          if(results[i].email==req.body.email){
+            emailUsedBefore=true;
+            
+          }
+       }
+      }
+      if(nameUsedBefore==true){
+        var errorMsgAccount= "User name used before"
+        dbConnection.end();
+        return res.render('createAccount',{ accountError: errorMsgAccount });
+      }else if(emailUsedBefore==true){
+        var errorMsgAccount= "Email already in user"
+        dbConnection.end();
+        return res.render('createAccount',{ accountError: errorMsgAccount });
+      }else{
+        dbConnection.end();
+        return res.redirect('/addNewAccount');
+      }
+      
+      
+  });
   
-  dbConnection.query('INSERT INTO user(username, email, password) VALUES(?,?, ?)',[userInfo.username, userInfo.email, userInfo.password], function(err,results,fields){
+  
+  
+  
+});
+
+router.get('/addNewAccount', function(req, res, next) {
+  var dbConnection= mysql.createConnection(dbConnectionInfo);
+  dbConnection.connect();
+
+  dbConnection.on('error', function(err){
+    if(err.code == 'PROTOCOL_SEQUENCE_TIMEOUT'){
+      console.log('Got a PROTOCOL_SEQUENCE_TIMEOUT')
+    } else {
+      console.log('Got a db error ', err);
+    }
+  });
+  dbConnection.query('INSERT INTO user(username, email, password) VALUES(?,?, ?)',[req.session.username, req.session.email, req.session.password], function(err,results,fields){
 
       if(err){
           throw err;
       }
      
   });
+  var transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'audiocollection1@gmail.com',
+            pass: 'SSPassignment'
+        }
+    });
+    var mailOptions = {
+      from: '<audiocollection1@gmail.com',
+      to: req.session.email, // list of receivers
+      subject: 'Joined Audio Collection', 
+      text: 'Hello' +req.session.username+'thanks for joing audio collection' 
+  	};
+    transporter.sendMail(mailOptions, function(error, info){
+    if(error){
+        console.log(error);
+        res.json({yo: 'error'});
+    }else{
+        console.log('Message sent: ' + info.response);
+        res.json({yo: info.response});
+    };
+});
   dbConnection.query('SELECT id, email FROM user WHERE username=?',[req.session.username], function(err,results,fields){
       
       if(err){
@@ -81,28 +144,11 @@ router.post('/newAccount', function(req, res, next){
       req.session.userEmail=results[0].email;
       dbConnection.end();
       req.session.loggedIn = true;
-      
-      var mail = {
-        from: "Patrick Brouder <pabrouder@gmail.com>",
-        to: req.session.userEmail,
-        subject: "Joined Audio Collection",
-        text: "Thanks for joining audio collection"
-      }
-
-      transport.sendMail(mail, function(error, response){
-        if(error){
-          console.log(error);
-        }else{
-          console.log("Message sent: " + response.message);
-        }
-
-        transport.close();
-      });
-      
+      res.redirect('/userPlaylists');
   });
-  
-  res.redirect('/userPlaylists');
-});
+
+   });
+ 
 
 router.get('/userPlaylists', function(req, res, next) {
   if(req.session.loggedIn == false){
@@ -446,3 +492,9 @@ router.get('/logout', function(req, res, next) {
   res.redirect('/');
 });
 module.exports = router;
+
+
+
+
+
+
