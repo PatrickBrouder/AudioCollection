@@ -3,13 +3,13 @@ var mysql = require('mysql');
 var router = express.Router();
 var mailer = require("nodemailer");
 var smtpTransport = require('nodemailer-smtp-transport');
-
+/*
 var dbConnectionInfo = {
   host : 'localhost',
   user : 'root',
   password : '12345',
   database : 'audio_1'
-}
+}*/
 var transport = mailer.createTransport({
     service: "gmail",
     auth: {
@@ -20,14 +20,14 @@ var transport = mailer.createTransport({
 });
 
 
-/*
+
 var dbConnectionInfo = {
   host : 'eu-cdbr-azure-west-d.cloudapp.net',
   user : 'b7ac63e92a8598',
   password : 'dde1f314',
   database : 'acsm_c027cee5201f6e7'
 };
-*/
+
 router.get('/', function(req, res, next) {
   req.session.loggedIn = false;
   res.render('index');
