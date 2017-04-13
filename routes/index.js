@@ -123,7 +123,7 @@ router.get('/addNewAccount', function(req, res, next) {
       from: '<audiocollection1@gmail.com',
       to: req.session.email, // list of receivers
       subject: 'Joined Audio Collection', 
-      text: 'Hello' +req.session.username+'thanks for joing audio collection' 
+      text: 'Hello ' +req.session.username+' thanks for joing audio collection' 
   	};
     transporter.sendMail(mailOptions, function(error, info){
     if(error){
