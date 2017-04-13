@@ -222,11 +222,45 @@ router.post('/newPlaylist', function(req, res, next){
       console.log('Got a db error ', err);
     }
   });
-  var playlistInfo={}
-  playlistInfo.playlistName= req.body.playlistName;
-  playlistInfo.useId= req.session.userId;
-  
-  dbConnection.query('INSERT INTO playlists_table(name, userId) VALUES(?, ?)',[playlistInfo.playlistName, playlistInfo.useId ], function(err,results,fields){
+  req.session.playlistName= req.body.playlistName;
+  var playlistAlready=false;
+  dbConnection.query('SELECT name FROM playlists_table WHERE userId=?',[req.session.userId], function(err,results,fields){
+
+      if(err){
+          throw err;
+      }
+      if(results[0]!=null){
+       for(i=0; i<results.length; i++){
+          if(results[i].name==req.body.playlistName){
+            playlistAlready=true;
+          }
+       }
+      }
+      if(playlistAlready==true){
+        var errorMsgPlay= "Playlist already exists"
+        dbConnection.end();
+        return res.render('createPlaylist',{ playlistError: errorMsgPlay });
+      }else{
+        dbConnection.end();
+        return res.redirect('/addNewPlaylist');
+      }
+      
+    });
+});
+
+router.get('/addNewPlaylist', function(req, res, next) {
+  var dbConnection= mysql.createConnection(dbConnectionInfo);
+  dbConnection.connect();
+
+  dbConnection.on('error', function(err){
+    if(err.code == 'PROTOCOL_SEQUENCE_TIMEOUT'){
+      console.log('Got a PROTOCOL_SEQUENCE_TIMEOUT')
+    } else {
+      console.log('Got a db error ', err);
+    }
+  });
+  var id=req.session.userId;
+  dbConnection.query('INSERT INTO playlists_table(name, userId) VALUES(?, ?)',[req.session.playlistName, id], function(err,results,fields){
 
       if(err){
           throw err;
@@ -261,7 +295,7 @@ router.post('/login', function(req, res, next){
           throw err;
       }
       if(results[0]==null){
-        req.session.errorMessage ="Wrong username";
+        req.session.errorMessage ="Wrong username must use username and not email";
         req.session.loggedIn = false;
         res.redirect('/loginError');
       }else if(req.session.password == results[0].password){
