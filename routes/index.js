@@ -1,28 +1,41 @@
 var express = require('express');
 var mysql = require('mysql');
 var router = express.Router();
+var mailer = require("nodemailer");
+var smtpTransport = require('nodemailer-smtp-transport');
 
-/*
 var dbConnectionInfo = {
   host : 'localhost',
   user : 'root',
   password : '12345',
   database : 'audio_1'
 }
-*/
+var transport = mailer.createTransport({
+    service: "gmail",
+    auth: {
+        type: 'OAuth2',
+        clientId: '264988223597-ppadpjsfihfi4nohg9aitlhnv7t96lge.apps.googleusercontent.com',
+        clientSecret: 'vlblchhercskdtgnt'
+    }
+});
+
+
+/*
 var dbConnectionInfo = {
   host : 'eu-cdbr-azure-west-d.cloudapp.net',
   user : 'b7ac63e92a8598',
   password : 'dde1f314',
   database : 'acsm_c027cee5201f6e7'
 };
-
+*/
 router.get('/', function(req, res, next) {
+  req.session.loggedIn = false;
   res.render('index');
 });
 router.get('/create', function(req, res, next) {
   res.render('createAccount');
 });
+
 
 router.post('/newAccount', function(req, res, next){
   var userInfo={}
@@ -56,16 +69,44 @@ router.post('/newAccount', function(req, res, next){
       if(err){
           throw err;
       }
-     // listItem.id = results.insertId;
+     
+  });
+  dbConnection.query('SELECT id, email FROM user WHERE username=?',[req.session.username], function(err,results,fields){
+      
+      if(err){
+          throw err;
+      }
+      
+      req.session.userId=results[0].id;
+      req.session.userEmail=results[0].email;
       dbConnection.end();
       req.session.loggedIn = true;
-      res.redirect('/userPlaylists');
+      
+      var mail = {
+        from: "Patrick Brouder <pabrouder@gmail.com>",
+        to: req.session.userEmail,
+        subject: "Joined Audio Collection",
+        text: "Thanks for joining audio collection"
+      }
+
+      transport.sendMail(mail, function(error, response){
+        if(error){
+          console.log(error);
+        }else{
+          console.log("Message sent: " + response.message);
+        }
+
+        transport.close();
+      });
+      
   });
+  
+  res.redirect('/userPlaylists');
 });
 
 router.get('/userPlaylists', function(req, res, next) {
   if(req.session.loggedIn == false){
-    res.redirect('/');
+    return res.redirect('/');
   }
   var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
@@ -111,6 +152,9 @@ router.get('/userPlaylists', function(req, res, next) {
 });
 
 router.get('/createNewPlaylist', function(req, res, next) {
+  if(req.session.loggedIn == false){
+    return res.redirect('/');
+  }
   res.render('createPlaylist');
 });
 
@@ -165,7 +209,7 @@ router.post('/login', function(req, res, next){
   
   req.session.username= req.body.username;
   req.session.password= req.body.password;
-  dbConnection.query('SELECT password, id FROM user WHERE username=?',[req.session.username], function(err,results,fields){
+  dbConnection.query('SELECT password, id, email FROM user WHERE username=?',[req.session.username], function(err,results,fields){
       
       if(err){
           throw err;
@@ -176,6 +220,7 @@ router.post('/login', function(req, res, next){
         res.redirect('/loginError');
       }else if(req.session.password == results[0].password){
         req.session.userId=results[0].id;
+        req.session.userEmail=results[0].email;
         req.session.loggedIn = true;
         res.redirect('/userPlaylists');
       }else{
@@ -198,6 +243,9 @@ router.get('/listen/:id', function(req, res, next) {
 
 });
 router.get('/playlist', function(req, res, next) {
+  if(req.session.loggedIn == false){
+    return res.redirect('/');
+  }
   var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
 
@@ -237,6 +285,9 @@ router.get('/playlist', function(req, res, next) {
     });
 });
 router.get('/addNewTrack', function(req, res, next) {
+  if(req.session.loggedIn == false){
+    return res.redirect('/');
+  }
   res.render('addTrack');
 });
 
@@ -299,6 +350,9 @@ router.get('/playSong/:id', function(req, res, next) {
 });
 
 router.get('/track', function(req, res, next) {
+  if(req.session.loggedIn == false){
+    return res.redirect('/');
+  }
   var dbConnection= mysql.createConnection(dbConnectionInfo);
   dbConnection.connect();
 
@@ -384,5 +438,11 @@ router.get('/deletePlaylist/:id', function(req, res, next) {
     });
   }
 
+});
+
+router.get('/logout', function(req, res, next) {
+  req.session.destroy()
+
+  res.redirect('/');
 });
 module.exports = router;
