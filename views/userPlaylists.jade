@@ -1,16 +1,24 @@
 extends layout
 
 block content
-  h1 Welcome to you playlists
-  for playList in playlists
-    div
-      - var playlistId =playList.playId
-      p= playList.name 
-      a(href='/listen/#{playlistId}') Listen
-      a(href='/deletePlaylist/#{playlistId}') delete
-  a(href='/createNewPlaylist')
-     button(type="button") Create new playlist
-  a(href="/logout")
-     button(type="button") Logout
+  div.container
+      h1.text-center Welcome to your playlists
+      for playList in playlists
+        div.row
+          - var playlistId =playList.playId
+          div.col-sm-4
+          div.col-sm-2.text-left
+            a.btn.btn-primary.btn-lg(href='/listen/#{playlistId}')
+                  span.glyphicon.glyphicon-headphones  #{playList.name}
+          div.col-sm-1.text-center
+            a.btn.btn.btn-danger.btn-lg(href='/deletePlaylist/#{playlistId}')
+                  span.glyphicon.glyphicon-trash
+          div.col-sm-5
+           
+        br
+      div.text-center
+        a.btn.btn.btn-default.btn-lg(href='/createNewPlaylist')
+          span.glyphicon.glyphicon-plus  New playlist
+        a.btn.btn.btn-default.btn-lg(href='/logout')
+          span.glyphicon.glyphicon-log-out  Logout
 
-  

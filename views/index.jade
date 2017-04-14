@@ -1,12 +1,17 @@
 extends layout
 
 block content
-  h1 Audio Collection
-  p Please login or register
-
-  form(name="loginForm", method="post", action='/login')
-        input(type="text", name="username")
-        input(type="password", name="password")
-        input(type="submit")
-  a(href='/create')
-     button(type="button") create new account
+  div.container
+      h1 Audio Collection
+      p Please login or register
+      p=errorMsg
+      form.form-group(name="loginForm", method="post", action='/login')
+            div.form-group
+                  label Username:
+                  input.form-control(type="text", name="username")
+            div.form-group
+                  label Password:
+                  input.form-control(type="password", name="password")
+            button.btn.btn-default(type='submit') Sign In
+      a(href='/create')
+            button.btn.btn-default(type="button") create new account

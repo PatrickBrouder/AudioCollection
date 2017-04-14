@@ -1,11 +1,16 @@
 extends layout
 
 block content
-  h1 Add new track
-  p=errorMsgTrack
-  form(name="newtrackform", method="post", action='/newTrack')
-        label Track name
-        input(type="text", name="trackName")
-        label Url link
-        input(type="text", name="trackLink")
-        input(type="submit")
+  div.container
+      h1 Add new track
+      p=errorMsgTrack
+      form.form-group(name="newtrackform", method="post", action='/newTrack')
+            div.form-group
+                  label Track name:
+                  input.form-control(type="text", name="trackName")
+            div.form-group
+                  label Url link (must be a soundcloud link with "soundcloud.com" in url:
+                  input.form-control(type="text", name="trackLink")
+            button.btn.btn-default(type='submit') Add track
+      a.btn.btn.btn-default.btn-lg(href='/playlist')
+            span.glyphicon.glyphicon-circle-arrow-left  Cancel

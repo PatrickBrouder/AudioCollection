@@ -1,15 +1,19 @@
 extends layout
 
 block content
-  h1 Create Account
-  p=accountError
-  form(name="loginForm", method="post", action='/newAccount')
-        label username
-        input(type="text", name="username")
-        label email
-        input(type="text", name="email")
-        label password
-        input(type="password", name="password")
-        input(type="submit")
-  a(href='/')
-     button(type="button") Back
+  div.container
+      h1 Create Account
+      p=accountError
+      form.form-group(name="loginForm", method="post", action='/newAccount')
+            div.form-group
+                  label username
+                  input.form-control(type="text", name="username")
+            div.form-group
+                  label email
+                  input.form-control(type="text", name="email")
+            div.form-group
+                  label password
+                  input.form-control(type="password", name="password")
+             button.btn.btn-default(type='submit') Create
+      a(href='/')
+            button.btn.btn-default(type="button") Back

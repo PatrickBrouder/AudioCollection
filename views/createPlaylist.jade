@@ -1,9 +1,13 @@
 extends layout
 
 block content
-  h1 Create Account
-  p=playlistError
-  form(name="playlistForm", method="post", action='/newPlaylist')
-        label Playlist Name
-        input(type="text", name="playlistName")
-        input(type="submit")
+  div.container.text-center
+    h1 Create Playlist
+    p=playlistError
+    form.form-group(name="playlistForm", method="post", action='/newPlaylist')
+          div.form-group
+                label Playlist Name:
+                input.form-control(type="text", name="playlistName")
+          button.btn.btn-default(type='submit') Create
+    a.btn.btn.btn-default.btn-lg(href='/userPlaylists')
+      span.glyphicon.glyphicon-circle-arrow-left  Back

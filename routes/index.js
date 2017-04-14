@@ -78,7 +78,7 @@ router.post('/newAccount', function(req, res, next){
         dbConnection.end();
         return res.render('createAccount',{ accountError: errorMsgAccount });
       }else if(emailUsedBefore==true){
-        var errorMsgAccount= "Email already in user"
+        var errorMsgAccount= "Email already in use"
         dbConnection.end();
         return res.render('createAccount',{ accountError: errorMsgAccount });
       }else{
@@ -271,9 +271,7 @@ router.get('/addNewPlaylist', function(req, res, next) {
   });
 });
 
-router.get('/loginError', function(req, res, next) {
-  res.render('loginError',{ errorMsg: req.session.errorMessage });
-});
+
 
 router.post('/login', function(req, res, next){
   var dbConnection= mysql.createConnection(dbConnectionInfo);
@@ -295,18 +293,18 @@ router.post('/login', function(req, res, next){
           throw err;
       }
       if(results[0]==null){
-        req.session.errorMessage ="Wrong username must use username and not email";
         req.session.loggedIn = false;
-        res.redirect('/loginError');
+        var errorMsgLogin="Wrong username must use username and not email"
+        return  res.render('index',{ errorMsg:errorMsgLogin  });
       }else if(req.session.password == results[0].password){
         req.session.userId=results[0].id;
         req.session.userEmail=results[0].email;
         req.session.loggedIn = true;
         res.redirect('/userPlaylists');
       }else{
-        req.session.errorMessage ="Wrong password";
         req.session.loggedIn = false;
-        res.redirect('/loginError');
+        var errorMsgLogin="Wrong password"
+        return  res.render('index',{ errorMsg:errorMsgLogin  });
       }
       
       dbConnection.end();

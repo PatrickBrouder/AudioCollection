@@ -1,15 +1,14 @@
 extends layout
 
 block content
-  h1 Welcome to you playlists
-  for song in playingNow
-    div
-      p= song.name 
-      
-      <iframe src="#{song.urlLink}" frameborder="0"></iframe>
-  a(href='/playlist')
-     button(type="button") Back
-  a(href="/logout")
-     button(type="button") Logout
-
-  
+  div.container.text-center
+    for song in playingNow
+      div
+        h1 Playing now #{song.name}
+        <iframe src="#{song.urlLink}" frameborder="0"></iframe>
+    a.btn.btn.btn-default.btn-lg(href='/playlist')
+      span.glyphicon.glyphicon-circle-arrow-left  Back
+    a.btn.btn.btn-default.btn-lg(href='/userPlaylists')
+      span.glyphicon.glyphicon-music  Playlists
+    a.btn.btn.btn-default.btn-lg(href='/logout')
+      span.glyphicon.glyphicon-log-out  Logout
